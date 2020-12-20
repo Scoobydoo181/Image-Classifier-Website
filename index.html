@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Image Identifier</title>
+
+        <!-- Load TensorFlow.js. This is required to use MobileNet. -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+        <!-- Load the MobileNet model. -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+
+        <style>
+            img, ul, li, input {
+                display: block;
+                margin: auto;
+                font-size: 1.3rem;
+                font-family: Georgia, 'Times New Roman', Times, serif;
+                text-align: center;
+            }
+
+            ul {
+                margin-top: 20px;
+            }
+
+            li {
+                border: 1px solid grey; 
+                width: 500px;
+                margin-top: 20px;
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <img src="" alt="" id="image" width="500" height="500" style="display: none;">
+        <input type="file" name="image" id="imageInput" accept="image/png, image/jpeg">
+
+        <ul id="predictions">
+            <!-- Filled by JavaScript -->
+        </ul>
+
+        <script>
+            const imageInput = document.querySelector('#imageInput')
+            const image = document.querySelector('#image')
+            const predictions = document.querySelector('#predictions')
+
+            imageInput.onchange = (e) => {
+                image.src = URL.createObjectURL(imageInput.files[0])
+                image.style = ""
+
+                predictions.innerHTML = ""
+
+                // Load the model.
+                mobilenet.load().then(model => {
+                    // Classify the image.
+                    model.classify(image).then(predictionsList => {
+                        for(let prediction of predictionsList) {
+                            const elem = document.createElement('li')
+                            elem.innerHTML = prediction.className + " | " + (prediction.probability * 100).toString().substring(0, 6) + "%"
+                            predictions.appendChild(elem)
+                        }
+                    });
+                });
+            }
+
+        </script>
+
+    </body>
+</html>
